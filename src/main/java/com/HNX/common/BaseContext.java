@@ -1,5 +1,5 @@
 package com.HNX.common;
-
+//HNX
 /**
  * 基于ThreadLocal封装工具类，用于保存和获取当前登录用户的ID
  */
