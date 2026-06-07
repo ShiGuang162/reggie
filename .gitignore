@@ -36,3 +36,12 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### 敏感配置文件（包含密码、API Key等）###
+application-local.yml
+application-dev.yml
+*.local.yml
+*.local.properties
+.env
+.env.local
+.env.*.local

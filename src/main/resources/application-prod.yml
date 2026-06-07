@@ -7,9 +7,9 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: ${SPRING_DATASOURCE_URL:jdbc:mysql://mysql:3306/reggie?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true}
-      username: ${SPRING_DATASOURCE_USERNAME:root}
-      password: ${SPRING_DATASOURCE_PASSWORD:Mysql@123456}
+      url: ${SPRING_DATASOURCE_URL}
+      username: ${SPRING_DATASOURCE_USERNAME}
+      password: ${SPRING_DATASOURCE_PASSWORD}
       initial-size: 5
       min-idle: 5
       max-active: 30
@@ -17,28 +17,32 @@ spring:
       test-while-idle: true
       validation-query: SELECT 1
   redis:
-    host: ${SPRING_REDIS_HOST:redis}
+    host: ${SPRING_REDIS_HOST}
     port: ${SPRING_REDIS_PORT:6379}
-    password: ${SPRING_REDIS_PASSWORD:1234}
+    password: ${SPRING_REDIS_PASSWORD:}
     database: 0
 
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
-    # 生产环境不输出SQL日志，防止敏感信息泄露
   global-config:
     db-config:
       id-type: ASSIGN_ID
 
+logging:
+  level:
+    root: info
+    com.HNX.mapper: warn
+
 reggie:
   path: ${REGGIE_PATH:/app/images/}
   sms:
-    expose-code: true
+    expose-code: ${REGGIE_SMS_EXPOSE_CODE:false}
 
 aliyun:
   sms:
-    access-key-id: ${ALIYUN_SMS_ACCESS_KEY_ID:dummy}
-    access-key-secret: ${ALIYUN_SMS_ACCESS_KEY_SECRET:dummy}
+    access-key-id: ${ALIYUN_SMS_ACCESS_KEY_ID}
+    access-key-secret: ${ALIYUN_SMS_ACCESS_KEY_SECRET}
     region-id: cn-hangzhou
-    sign-name: 速通互联验证码
-    template-code: 100001
+    sign-name: ${ALIYUN_SMS_SIGN_NAME}
+    template-code: ${ALIYUN_SMS_TEMPLATE_CODE}
