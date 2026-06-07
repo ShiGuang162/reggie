@@ -4,11 +4,12 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>员工管理 · 菩提阁</title>
   <!-- 引入样式 -->
   <link rel="stylesheet" href="../../plugins/element-ui/index.css" />
   <link rel="stylesheet" href="../../styles/common.css" />
   <link rel="stylesheet" href="../../styles/page.css" />
+  <link rel="stylesheet" href="../../styles/admin-theme.css" />
   <style>
     #member-app  .notAdmin::after{
       border: 0 !important;
@@ -18,7 +19,7 @@
 </head>
 <body>
   <div class="dashboard-container" id="member-app">
-    <div class="container">
+    <div class="container" v-loading="listLoading" element-loading-text="加载中…">
       <div class="tableBar">
         <el-input
           v-model="input"
@@ -87,7 +88,7 @@
             >
               {{ scope.row.status == '1' ? '禁用' : '启用' }}
             </el-button>
-          </template>x
+          </template>
         </el-table-column>
       </el-table>
       <el-pagination
@@ -122,6 +123,8 @@
              tableData : [],
              id : '',
              status : '',
+             user: '',
+             listLoading: false
           }
         },
         computed: {},
@@ -141,14 +144,18 @@
               pageSize: this.pageSize,
               name: this.input ? this.input : undefined
             }
-            await getMemberList(params).then(res => {
+            this.listLoading = true
+            try {
+              const res = await getMemberList(params)
               if (String(res.code) === '1') {
                 this.tableData = res.data.records || []
                 this.counts = res.data.total
               }
-            }).catch(err => {
+            } catch (err) {
               this.$message.error('请求出错了：' + err)
-            })
+            } finally {
+              this.listLoading = false
+            }
           },
           handleQuery() {
             this.page = 1;

@@ -102,7 +102,7 @@ public class EmployeeController  {
      */
     @GetMapping("/page")
     public R<Page> page(int page, int pageSize, String name){
-        log.info("page = {},pageSize = {},name = {}",page,pageSize,name);
+        log.debug("page = {}, pageSize = {}, name = {}", page, pageSize, name);
 
         //分页构造器
         Page pageInfo = new Page(page,pageSize);
@@ -151,5 +151,14 @@ public class EmployeeController  {
             return R.success(employee);
         }
         return R.error("没有查询到对应员工信息");
+    }
+
+    /**
+     * 健康检查接口 - 用于Docker健康检查
+     * @return 员工总数
+     */
+    @GetMapping("/count")
+    public R<Integer> count() {
+        return R.success(Math.toIntExact(employeeService.count()));
     }
 }

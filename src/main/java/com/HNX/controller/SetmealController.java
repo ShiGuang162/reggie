@@ -14,7 +14,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -71,19 +73,20 @@ public class SetmealController {
         BeanUtils.copyProperties(pageInfo,dtoPage,"records");
         List<Setmeal> records = pageInfo.getRecords();
 
-            List<SetmealDto> list=records.stream().map((item)->{
+        List<Long> categoryIds = records.stream()
+                .map(Setmeal::getCategoryId)
+                .distinct()
+                .collect(Collectors.toList());
+        final Map<Long, String> categoryNameMap = new HashMap<>();
+        if (!categoryIds.isEmpty()) {
+            List<Category> categories = categoryService.listByIds(categoryIds);
+            categories.forEach(c -> categoryNameMap.put(c.getId(), c.getName()));
+        }
+
+        List<SetmealDto> list = records.stream().map((item) -> {
             SetmealDto setmealDto = new SetmealDto();
-            //对象拷贝
-            BeanUtils.copyProperties(item,setmealDto);
-            //分类id
-            Long categoryId = item.getCategoryId();
-            //根据分类id查询分类对象
-            Category category = categoryService.getById(categoryId);
-            if(category!=null){
-                //获取分类名称
-                String categoryName = category.getName();
-                setmealDto.setCategoryName(categoryName);
-            }
+            BeanUtils.copyProperties(item, setmealDto);
+            setmealDto.setCategoryName(categoryNameMap.get(item.getCategoryId()));
             return setmealDto;
         }).collect(Collectors.toList());
 

@@ -6,30 +6,45 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://localhost:3306/reggie?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
-      username: root
-      password: 12345678
-redis:
-  host: 127.0.0.1
-  port: 6379
-  password: 1234
-  database: 0
+      url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/reggie?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true}
+      username: ${SPRING_DATASOURCE_USERNAME:root}
+      password: ${SPRING_DATASOURCE_PASSWORD:Mysql@123456}
+      # 连接池：减少高并发下获取连接等待，避免默认过小池子
+      initial-size: 5
+      min-idle: 5
+      max-active: 30
+      max-wait: 20000
+      test-while-idle: true
+      validation-query: SELECT 1
+  redis:
+    host: ${SPRING_REDIS_HOST:127.0.0.1}
+    port: ${SPRING_REDIS_PORT:6379}
+    password: ${SPRING_REDIS_PASSWORD:1234}
+    database: 0
+# 本地如需看 SQL，可临时打开：mybatis-plus.configuration.log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+# 或设置 logging.level.com.HNX.mapper=debug（需配合 slf4j）
 mybatis-plus:
   configuration:
-    #在映射实体或者属性时，将数据库中表名和字段名中的下划线去掉，按照驼峰命名法映射
-    map-underscore-to-camel-case: true #开启驼峰命名
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
   global-config:
     db-config:
       id-type: ASSIGN_ID
+logging:
+  level:
+    root: info
+    com.HNX.mapper: warn
+
 reggie:
-  path: /Users/shiguang/Desktop/reggie_take_out/图片资源/
+  path: ${REGGIE_PATH:/Users/shiguang/Desktop/reggie_take_out/图片资源/}
+  # 为 true 时，发送验证码接口会在 JSON 的 map.verifyCode 中回传验证码，便于本地/联调测试；生产务必关闭
+  sms:
+    expose-code: ${REGGIE_SMS_EXPOSE_CODE:true}
 
 # 阿里云SMS配置
 aliyun:
   sms:
-    access-key-id: ${ALIYUN_SMS_ACCESS_KEY_ID}
-    access-key-secret: ozhmTXUaZKnGZz3HiDgn3iSFRgT2mh
+    access-key-id: ${ALIYUN_SMS_ACCESS_KEY_ID:}
+    access-key-secret: ${ALIYUN_SMS_ACCESS_KEY_SECRET:}
     region-id: cn-hangzhou
-    sign-name: 速通互联验证码
-    template-code: 100001
+    sign-name: ${ALIYUN_SMS_SIGN_NAME:速通互联验证码}
+    template-code: ${ALIYUN_SMS_TEMPLATE_CODE:100001}

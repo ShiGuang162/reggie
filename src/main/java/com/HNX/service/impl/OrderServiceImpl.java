@@ -2,9 +2,11 @@ package com.HNX.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.HNX.common.BaseContext;
 import com.HNX.common.CustomException;
+import com.HNX.common.R;
 import com.HNX.entity.*;
 import com.HNX.mapper.OrderMapper;
 import com.HNX.service.*;
@@ -15,7 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -104,5 +109,71 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Orders> implement
 
         //清空购物车数据
         shoppingCartService.remove(wrapper);
+    }
+
+    /**
+     * 订单分页查询（管理端）
+     */
+    @Override
+    public R<Page> pageQuery(int page, int pageSize, Long number, String beginTime, String endTime) {
+        // 创建分页对象
+        Page<Orders> pageInfo = new Page<>(page, pageSize);
+        LambdaQueryWrapper<Orders> queryWrapper = new LambdaQueryWrapper<>();
+
+        // 条件查询
+        queryWrapper.eq(number != null, Orders::getId, number);
+        if (beginTime != null && endTime != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime begin = LocalDateTime.parse(beginTime + " 00:00:00", formatter);
+            LocalDateTime end = LocalDateTime.parse(endTime + " 23:59:59", formatter);
+            queryWrapper.between(Orders::getOrderTime, begin, end);
+        }
+
+        // 按更新时间降序
+        queryWrapper.orderByDesc(Orders::getOrderTime);
+
+        // 执行分页查询
+        this.page(pageInfo, queryWrapper);
+
+        attachOrderDetails(pageInfo.getRecords());
+
+        return R.success(pageInfo);
+    }
+
+    /**
+     * 用户订单分页查询
+     */
+    @Override
+    public R<Page> userPageQuery(int page, int pageSize, Long userId) {
+        Page<Orders> pageInfo = new Page<>(page, pageSize);
+        LambdaQueryWrapper<Orders> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Orders::getUserId, userId);
+        queryWrapper.orderByDesc(Orders::getOrderTime);
+        this.page(pageInfo, queryWrapper);
+
+        attachOrderDetails(pageInfo.getRecords());
+
+        return R.success(pageInfo);
+    }
+
+    /**
+     * 批量加载订单明细，避免分页场景下 N+1 查询
+     */
+    private void attachOrderDetails(List<Orders> records) {
+        if (records == null || records.isEmpty()) {
+            return;
+        }
+
+        List<Long> orderIds = records.stream().map(Orders::getId).collect(Collectors.toList());
+        LambdaQueryWrapper<OrderDetail> detailWrapper = new LambdaQueryWrapper<>();
+        detailWrapper.in(OrderDetail::getOrderId, orderIds);
+        List<OrderDetail> allDetails = orderDetailService.list(detailWrapper);
+
+        Map<Long, List<OrderDetail>> detailsByOrderId = allDetails.stream()
+                .collect(Collectors.groupingBy(OrderDetail::getOrderId));
+
+        for (Orders order : records) {
+            order.setOrderDetails(detailsByOrderId.getOrDefault(order.getId(), Collections.emptyList()));
+        }
     }
 }

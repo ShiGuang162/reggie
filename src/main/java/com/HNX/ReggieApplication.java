@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@Slf4j
+@Slf4j/*  */
 @SpringBootApplication
 @MapperScan("com.HNX.mapper")//扫描mapper接口
 @ServletComponentScan

@@ -1,5 +1,4 @@
 package com.HNX.common;
-//HNX
 /**
  * 基于ThreadLocal封装工具类，用于保存和获取当前登录用户的ID
  */
@@ -18,5 +17,11 @@ public class BaseContext {
      */
     public static Long getCurrentId(){
         return threadLocal.get();
+    }
+    /**
+     * 清理ThreadLocal，防止内存泄漏
+     */
+    public static void removeCurrentId(){
+        threadLocal.remove();
     }
 }

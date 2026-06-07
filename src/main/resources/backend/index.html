@@ -4,12 +4,13 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>瑞吉外卖管理端</title>
+    <title>菩提阁 · 管理后台</title>
     <link rel="shortcut icon" href="favicon.ico">
     <!-- 引入样式 -->
     <link rel="stylesheet" href="plugins/element-ui/index.css" />
     <link rel="stylesheet" href="styles/common.css" />
     <link rel="stylesheet" href="styles/index.css" />
+    <link rel="stylesheet" href="styles/admin-theme.css" />
     <link rel="stylesheet" href="styles/icon/iconfont.css" />
     <style>
       .body{
@@ -40,9 +41,9 @@
               :default-active="defAct"
               :unique-opened="false"
               :collapse-transition="false"
-              background-color="#343744"
-              text-color="#bfcbd9"
-              active-text-color="#f4f4f5"
+              background-color="transparent"
+              text-color="rgba(255,255,255,0.65)"
+              active-text-color="#ffffff"
             >
               <div v-for="item in menuList" :key="item.id">
                 <el-submenu :index="item.id" v-if="item.children && item.children.length>0">
@@ -56,7 +57,7 @@
                     :key="sub.id"
                     @click="menuHandle(sub,false)"
                     >
-                    <i :class="iconfont" :class="sub.icon"></i>
+                    <i class="iconfont" :class="sub.icon"></i>
                     <span slot="title">{{sub.name}}</span>
                     </el-menu-item
                   >
@@ -95,6 +96,7 @@
               height="auto"
               frameborder="0"
               v-show="!loading"
+              @load="onIframeLoaded"
             ></iframe>
           </div>
         </div>
@@ -159,7 +161,7 @@
             headTitle: '员工管理',
             goBackFlag: false,
             loading: true,
-            timer: null
+            iframeLoadFallbackTimer: null
           }
         },
         computed: {},
@@ -168,11 +170,13 @@
           if (userInfo) {
             this.userInfo = JSON.parse(userInfo)
           }
-          this.closeLoading()
+          // 首屏由 iframe @load 结束加载，不再使用固定 1s 延迟
+          this.scheduleIframeLoadFallback()
         },
         beforeDestroy() {
-          this.timer = null
-          clearTimeout(this.timer)
+          if (this.iframeLoadFallbackTimer) {
+            clearTimeout(this.iframeLoadFallbackTimer)
+          }
         },
         mounted() {
           window.menuHandle = this.menuHandle
@@ -194,18 +198,33 @@
             this.menuHandle(menu,false)
           },
           menuHandle(item, goBackFlag) {
-            this.loading = true
             this.menuActived = item.id
-            this.iframeUrl = item.url
             this.headTitle = item.name
             this.goBackFlag = goBackFlag
-            this.closeLoading()
+            // 仅当切换不同页面时显示加载；同 URL 不重复转圈
+            const nextUrl = item.url
+            if (this.iframeUrl !== nextUrl) {
+              this.loading = true
+              this.iframeUrl = nextUrl
+              this.scheduleIframeLoadFallback()
+            }
           },
-          closeLoading(){
-            this.timer = null
-            this.timer = setTimeout(()=>{
+          onIframeLoaded() {
+            this.loading = false
+            if (this.iframeLoadFallbackTimer) {
+              clearTimeout(this.iframeLoadFallbackTimer)
+              this.iframeLoadFallbackTimer = null
+            }
+          },
+          // 极端情况（iframe 加载失败）避免一直转圈
+          scheduleIframeLoadFallback() {
+            if (this.iframeLoadFallbackTimer) {
+              clearTimeout(this.iframeLoadFallbackTimer)
+            }
+            this.iframeLoadFallbackTimer = setTimeout(() => {
               this.loading = false
-            },1000)
+              this.iframeLoadFallbackTimer = null
+            }, 12000)
           }
         }
       })

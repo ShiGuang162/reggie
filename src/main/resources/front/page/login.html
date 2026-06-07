@@ -1,92 +1,255 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
-        <title>菩提阁</title>
-        <link rel="icon" href="./../images/favico.ico">
-        <!--不同屏幕尺寸根字体设置-->
-        <script src="./../js/base.js"></script>
-        <!--element-ui的样式-->
-        <link rel="stylesheet" href="../../backend/plugins/element-ui/index.css" />
-        <!--引入vant样式-->
-        <link rel="stylesheet" href="../styles/vant.min.css"/>
-        <!-- 引入样式  -->
-        <link rel="stylesheet" href="../styles/index.css" />
-        <!--本页面内容的样式-->
-        <link rel="stylesheet" href="./../styles/login.css" />
-      </head>
-    <body>
-        <div id="login" v-loading="loading">
-            <div class="divHead">登录</div>
-            <div class="divContainer">
-                <el-input placeholder=" 请输入手机号码" v-model="form.phone"  maxlength='20'/></el-input>
-                <div class="divSplit"></div>
-                <el-input placeholder=" 请输入验证码" v-model="form.code"  maxlength='20'/></el-input>
-                <span @click='getCode'>获取验证码</span>
-            </div>
-            <div class="divMsg" v-if="msgFlag">手机号输入不正确，请重新输入</div>
-            <el-button type="primary" :class="{btnSubmit:1===1,btnNoPhone:!form.phone,btnPhone:form.phone}" @click="btnLogin">登录</el-button>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
+    <title>菩提阁 - 登录</title>
+    <link rel="icon" href="./../images/favico.ico">
+    <script src="./../js/base.js"></script>
+    <link rel="stylesheet" href="../../backend/plugins/element-ui/index.css" />
+    <link rel="stylesheet" href="../styles/vant.min.css"/>
+    <link rel="stylesheet" href="./../styles/login.css" />
+</head>
+<body>
+    <div id="login" v-loading="loading">
+        <!-- 动态背景 -->
+        <div class="bg-animation">
+            <div class="bg-circle bg-circle-1"></div>
+            <div class="bg-circle bg-circle-2"></div>
+            <div class="bg-circle bg-circle-3"></div>
+            <div class="bg-circle bg-circle-4"></div>
         </div>
-        <!-- 开发环境版本，包含了有帮助的命令行警告 -->
-        <script src="../../backend/plugins/vue/vue.js"></script>
-        <!-- 引入组件库 -->
-        <script src="../../backend/plugins/element-ui/index.js"></script>
-        <!-- 引入vant样式 -->
-        <script src="./../js/vant.min.js"></script>  
-        <!-- 引入axios -->
-        <script src="../../backend/plugins/axios/axios.min.js"></script>
-        <script src="./../js/request.js"></script>
-        <script src="./../api/login.js"></script>
-    </body>
-    <script>
-        new Vue({
-            el:"#login",
-            data(){
-                return {
-                    form:{
-                        phone:'',
-                        code:''
-                    },
-                    msgFlag:false,
-                    loading:false
+        
+        <!-- 浮动美食图标 -->
+        <div class="floating-icons">
+            <div class="icon icon-1">🍜</div>
+            <div class="icon icon-2">🥘</div>
+            <div class="icon icon-3">🍱</div>
+            <div class="icon icon-4">🥟</div>
+            <div class="icon icon-5">🍛</div>
+            <div class="icon icon-6">🥗</div>
+        </div>
+        
+        <!-- 主卡片 -->
+        <div class="login-card">
+            <!-- 发光效果 -->
+            <div class="card-glow"></div>
+            
+            <!-- 品牌头部 -->
+            <div class="brand-header">
+                <div class="logo-container">
+                    <div class="brand-logo">
+                        <span class="logo-text">膳</span>
+                    </div>
+                    <div class="logo-ring ring-1"></div>
+                    <div class="logo-ring ring-2"></div>
+                </div>
+                <div class="brand-name">
+                    <span class="brand-highlight">菩提</span>阁
+                </div>
+                <div class="brand-tagline">
+                    <span class="tagline-dot"></span>
+                    美食 · 品质 · 生活
+                    <span class="tagline-dot"></span>
+                </div>
+            </div>
+            
+            <!-- 欢迎文字 -->
+            <div class="welcome-section">
+                <div class="welcome-badge">
+                    <i class="el-icon-star-off"></i>
+                    会员专享
+                </div>
+                <div class="welcome-title">欢迎回来</div>
+                <div class="welcome-subtitle">开启您的美食之旅</div>
+            </div>
+            
+            <!-- 输入表单 -->
+            <div class="input-group">
+                <!-- 手机号 -->
+                <div class="input-wrapper">
+                    <div class="input-label">
+                        <i class="el-icon-mobile-phone"></i>
+                        手机号码
+                    </div>
+                    <input 
+                        type="tel" 
+                        class="input-field" 
+                        placeholder="请输入11位手机号"
+                        v-model="form.phone"
+                        maxlength="11"
+                        @keyup.enter="btnLogin"
+                    />
+                    <div class="input-line"></div>
+                </div>
+                
+                <!-- 验证码 -->
+                <div class="input-wrapper">
+                    <div class="input-label">
+                        <i class="el-icon-lock"></i>
+                        验证码
+                    </div>
+                    <div class="code-row">
+                        <input 
+                            type="text" 
+                            class="input-field code-input" 
+                            placeholder="请输入验证码"
+                            v-model="form.code"
+                            maxlength="6"
+                            @keyup.enter="btnLogin"
+                        />
+                        <button 
+                            class="code-btn" 
+                            :class="{loading: codeLoading}"
+                            :disabled="codeLoading || !form.phone"
+                            @click="getCode"
+                        >
+                            <span v-if="!codeLoading">获取验证码</span>
+                            <span v-else>{{ count }}s</span>
+                        </button>
+                    </div>
+                    <div class="input-line"></div>
+                </div>
+            </div>
+            
+            <!-- 错误提示 -->
+            <div class="error-msg" v-if="msgFlag">
+                <i class="el-icon-warning"></i>
+                <span>手机号格式不正确</span>
+            </div>
+            
+            <!-- 登录按钮 -->
+            <button 
+                class="login-btn" 
+                :class="{active: form.phone && form.code}"
+                :disabled="!form.phone || !form.code"
+                @click="btnLogin"
+            >
+                <span class="btn-text">立即登录</span>
+                <span class="btn-icon">
+                    <i class="el-icon-arrow-right"></i>
+                </span>
+            </button>
+            
+            <!-- 其他登录方式 -->
+            <div class="other-login">
+                <div class="divider">
+                    <span>其他登录方式</span>
+                </div>
+                <div class="social-icons">
+                    <div class="social-btn wechat">
+                        <i class="el-icon-chat-dot-round"></i>
+                    </div>
+                    <div class="social-btn qq">
+                        <i class="el-icon-user"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 底部 -->
+            <div class="login-footer">
+                <div class="footer-text">
+                    登录即表示同意 <a href="#">用户协议</a> 和 <a href="#">隐私政策</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部装饰 -->
+        <div class="bottom-decoration">
+            <div class="wave"></div>
+        </div>
+    </div>
+    
+    <script src="../../backend/plugins/vue/vue.js"></script>
+    <script src="../../backend/plugins/element-ui/index.js"></script>
+    <script src="./../js/vant.min.js"></script>  
+    <script src="../../backend/plugins/axios/axios.min.js"></script>
+    <script src="./../js/request.js"></script>
+    <script src="./../api/login.js"></script>
+</body>
+<script>
+    new Vue({
+        el:"#login",
+        data(){
+            return {
+                form:{
+                    phone:'',
+                    code:''
+                },
+                msgFlag:false,
+                loading:false,
+                codeLoading:false,
+                count:0,
+                timer:null
+            }
+        },
+        computed:{},
+        created(){},
+        mounted(){},
+        methods:{
+            getCode(){
+                if(this.codeLoading) return;
+                this.form.code = '';
+                const regex = /^(13[0-9]{9})|(15[0-9]{9})|(17[0-9]{9})|(18[0-9]{9})|(19[0-9]{9})$/;
+                if (regex.test(this.form.phone)) {
+                    this.msgFlag = false;
+                    sendMsgApi({phone:this.form.phone}).then(res => {
+                        if(res.code === 1){
+                            this.$message.success('验证码已发送');
+                            const verifyCode = res.map && res.map.verifyCode;
+                            if (verifyCode != null && verifyCode !== '') {
+                                const codeStr = String(verifyCode);
+                                this.form.code = codeStr;
+                                if (this.$dialog && typeof this.$dialog.alert === 'function') {
+                                    this.$dialog.alert({
+                                        title: '验证码',
+                                        message: '您的验证码：' + codeStr + '（已填入输入框）',
+                                        messageAlign: 'center',
+                                        confirmButtonText: '我知道了'
+                                    });
+                                } else {
+                                    window.alert('验证码：' + codeStr);
+                                }
+                            }
+                            this.codeLoading = true;
+                            this.count = 60;
+                            this.timer = setInterval(() => {
+                                this.count--;
+                                if(this.count <= 0){
+                                    clearInterval(this.timer);
+                                    this.codeLoading = false;
+                                }
+                            }, 1000);
+                        } else {
+                            this.$message.error(res.msg || '发送失败');
+                        }
+                    });
+                }else{
+                    this.msgFlag = true;
                 }
             },
-            computed:{},
-            created(){},
-            mounted(){},
-            methods:{
-                getCode(){
-                    this.form.code = ''
-                    const regex = /^(13[0-9]{9})|(15[0-9]{9})|(17[0-9]{9})|(18[0-9]{9})|(19[0-9]{9})$/;
-                    if (regex.test(this.form.phone)) {
-                        this.msgFlag = false
-                        //this.form.code = (Math.random()*1000000).toFixed(0)
-                        sendMsgApi({phone:this.form.phone})
+            async btnLogin(){
+                if(this.form.phone && this.form.code){
+                    this.loading = true;
+                    const res = await loginApi(this.form);
+                    this.loading = false;
+                    if(res.code === 1){
+                        sessionStorage.setItem("userPhone",this.form.phone);
+                        const u = res.data || {}
+                        const name = u.name != null ? String(u.name).trim() : ''
+                        sessionStorage.setItem("userName", name)
+                        window.requestAnimationFrame(()=>{
+                            window.location.href= '/front/index.html';
+                        });                         
                     }else{
-                        this.msgFlag = true
+                        this.$notify({ type:'warning', message:res.msg});
                     }
-                },
-                async btnLogin(){
-                    if(this.form.phone && this.form.code){
-                        this.loading = true
-                        const res = await loginApi(this.form)
-                        this.loading = false
-                        if(res.code === 1){
-                            sessionStorage.setItem("userPhone",this.form.phone)
-                            window.requestAnimationFrame(()=>{
-                                window.location.href= '/front/index.html'
-                            })                           
-                        }else{
-                            this.$notify({ type:'warning', message:res.msg});
-                        }
-                    }else{
-                        this.$notify({ type:'warning', message:'请输入手机号码'});
-                    }
+                }else{
+                    this.$notify({ type:'warning', message:'请输入手机号码和验证码'});
                 }
             }
-        })
-    </script>
+        }
+    })
+</script>
 </html>

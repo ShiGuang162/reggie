@@ -15,7 +15,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -71,19 +74,22 @@ public class DishController {
         // 对象拷贝
         BeanUtils.copyProperties(pageInfo,dishDtoPage,"records");
         List<Dish> records = pageInfo.getRecords();
+
+        // 批量查询分类，避免每条菜品单独 getById（N+1）
+        List<Long> categoryIds = records.stream()
+                .map(Dish::getCategoryId)
+                .distinct()
+                .collect(Collectors.toList());
+        final Map<Long, String> categoryNameMap = new HashMap<>();
+        if (!categoryIds.isEmpty()) {
+            List<Category> categories = categoryService.listByIds(categoryIds);
+            categories.forEach(c -> categoryNameMap.put(c.getId(), c.getName()));
+        }
+
         List<DishDto> list = records.stream().map((item) -> {
             DishDto dishDto = new DishDto();
-
-            BeanUtils.copyProperties(item,dishDto);
-
-            Long categoryId = item.getCategoryId();//获取分类id
-            // 根据id查询分类
-            Category category = categoryService.getById(categoryId);
-           if(category!=null){
-               String categoryName = category.getName();
-               dishDto.setCategoryName(categoryName);
-           }
-
+            BeanUtils.copyProperties(item, dishDto);
+            dishDto.setCategoryName(categoryNameMap.get(item.getCategoryId()));
             return dishDto;
         }).collect(Collectors.toList());
         dishDtoPage.setRecords(list);
@@ -148,27 +154,34 @@ public class DishController {
 
         List<Dish> list = dishService.list(queryWrapper);
 
+        // 优化：批量查询所有分类，避免N+1问题
+        List<Long> categoryIds = list.stream()
+                .map(Dish::getCategoryId)
+                .distinct()
+                .collect(Collectors.toList());
+        final Map<Long, String> categoryNameMap = new HashMap<>();
+        if (!categoryIds.isEmpty()) {
+            List<Category> categories = categoryService.listByIds(categoryIds);
+            categories.forEach(c -> categoryNameMap.put(c.getId(), c.getName()));
+        }
+
+        // 优化：批量查询所有菜品口味，避免N+1问题
+        List<Long> dishIds = list.stream().map(Dish::getId).collect(Collectors.toList());
+        final Map<Long, List<DishFlavor>> flavorMap = new HashMap<>();
+        if (!dishIds.isEmpty()) {
+            LambdaQueryWrapper<DishFlavor> flavorWrapper = new LambdaQueryWrapper<>();
+            flavorWrapper.in(DishFlavor::getDishId, dishIds);
+            List<DishFlavor> allFlavors = dishFlavorService.list(flavorWrapper);
+            allFlavors.forEach(f -> flavorMap.computeIfAbsent(f.getDishId(), k -> new ArrayList<>()).add(f));
+        }
 
         List<DishDto> dishDtoList = list.stream().map((item) -> {
             DishDto dishDto = new DishDto();
-
-            BeanUtils.copyProperties(item,dishDto);
-
-            Long categoryId = item.getCategoryId();//获取分类id
-            // 根据id查询分类
-            Category category = categoryService.getById(categoryId);
-            if(category!=null){
-                String categoryName = category.getName();
-                dishDto.setCategoryName(categoryName);
-            }
-
-            //当前菜品的id
-            Long dishId = item.getId();
-            LambdaQueryWrapper<DishFlavor> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-            lambdaQueryWrapper.eq(DishFlavor::getDishId,dishId);
-            //SQL:select * from dish_flavor where dish_id = ?
-            List<DishFlavor> dishFlavorList = dishFlavorService.list(lambdaQueryWrapper);
-            dishDto.setFlavors(dishFlavorList);
+            BeanUtils.copyProperties(item, dishDto);
+            // 使用Map快速获取分类名称
+            dishDto.setCategoryName(categoryNameMap.get(item.getCategoryId()));
+            // 使用Map快速获取口味列表
+            dishDto.setFlavors(flavorMap.getOrDefault(item.getId(), new ArrayList<>()));
             return dishDto;
         }).collect(Collectors.toList());
 

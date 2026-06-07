@@ -1,0 +1,408 @@
+/**
+ * 菩提阁管理端 — 现代暖色餐饮后台主题
+ * 与前台 H5 视觉同系：陶土珊瑚 + 琥珀点缀 + 深岩灰侧栏
+ * 需在 element-ui / common.css / page.css 之后引入
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,500&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+:root {
+  --adm-primary: #e07a5f;
+  --adm-primary-hover: #c96a52;
+  --adm-primary-soft: rgba(224, 122, 95, 0.12);
+  --adm-gold: #e8ba6b;
+  --adm-gold-soft: rgba(232, 186, 107, 0.2);
+  --adm-ink: #2d3142;
+  --adm-muted: #6b7280;
+  --adm-page-bg: #f5f2ee;
+  --adm-card: #ffffff;
+  --adm-sidebar-top: #2f2d36;
+  --adm-sidebar-bot: #1a181e;
+  --adm-radius: 14px;
+  --adm-radius-sm: 10px;
+  --adm-shadow: 0 4px 24px rgba(45, 49, 66, 0.08);
+  --adm-shadow-hover: 0 12px 40px rgba(45, 49, 66, 0.12);
+  --adm-font: 'DM Sans', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ========== 全局排版 ========== */
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--adm-font) !important;
+  color: var(--adm-ink);
+  background: var(--adm-page-bg) !important;
+}
+
+/* ========== 主框架：侧栏 ========== */
+.sidebar-container {
+  background: linear-gradient(180deg, var(--adm-sidebar-top) 0%, var(--adm-sidebar-bot) 100%) !important;
+  box-shadow: 4px 0 32px rgba(0, 0, 0, 0.18);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sidebar-container .logo {
+  background: transparent !important;
+  padding: 28px 20px 36px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-container .logo img {
+  filter: brightness(1.08) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+}
+
+.sidebar-container .el-menu {
+  background-color: transparent !important;
+  padding: 8px 0 24px;
+}
+
+.sidebar-container .el-submenu > .el-submenu__title,
+.sidebar-container .el-submenu .el-menu-item {
+  background-color: transparent !important;
+}
+
+.el-menu .el-menu-item {
+  color: rgba(255, 255, 255, 0.62) !important;
+  margin: 4px 12px 6px 8px !important;
+  padding: 0 16px 0 20px !important;
+  min-width: auto !important;
+  height: 46px !important;
+  line-height: 46px !important;
+  border-radius: 0 var(--adm-radius-sm) var(--adm-radius-sm) 0 !important;
+  transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.el-menu .el-menu-item:hover {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* 覆盖 index.css 中 :active 变深灰字（在深色侧栏上不可读） */
+.sidebar-container .el-menu .el-menu-item:active,
+.sidebar-container .el-menu .el-menu-item:active span {
+  color: rgba(255, 255, 255, 0.92) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.el-menu .el-menu-item.is-active {
+  background: linear-gradient(90deg, var(--adm-primary) 0%, #d4685a 55%, var(--adm-gold) 160%) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 16px rgba(224, 122, 95, 0.45);
+  font-weight: 600 !important;
+}
+
+.el-menu .el-menu-item.is-active span {
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+.el-menu-item i.iconfont {
+  margin-right: 10px !important;
+  font-size: 18px !important;
+}
+
+.el-submenu__title {
+  color: rgba(255, 255, 255, 0.55) !important;
+}
+
+/* ========== 顶栏 ========== */
+.main-container {
+  background: var(--adm-page-bg) !important;
+}
+
+.navbar {
+  height: 64px !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(45, 49, 66, 0.06);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 4px 20px rgba(45, 49, 66, 0.04) !important;
+}
+
+.navbar .head-lable {
+  color: var(--adm-ink) !important;
+  font-weight: 700 !important;
+  font-size: 17px !important;
+  letter-spacing: -0.02em;
+}
+
+.navbar .head-lable .goBack {
+  color: var(--adm-muted) !important;
+  border-right-color: rgba(45, 49, 66, 0.12) !important;
+  font-weight: 500 !important;
+}
+
+.navbar .head-lable .goBack:hover {
+  color: var(--adm-primary) !important;
+}
+
+.navbar .right-menu {
+  color: var(--adm-muted) !important;
+  font-weight: 500;
+}
+
+.navbar .right-menu .avatar-wrapper {
+  padding: 6px 14px;
+  background: var(--adm-primary-soft);
+  border-radius: 999px;
+  color: var(--adm-primary) !important;
+  line-height: normal !important;
+  margin-top: 14px !important;
+  font-size: 14px;
+}
+
+.navbar .right-menu .outLogin {
+  opacity: 0.65;
+  transition: opacity 0.2s, transform 0.2s;
+  filter: grayscale(0.2);
+}
+
+.navbar .right-menu .outLogin:hover {
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+/* ========== iframe 内：列表/表单容器 ========== */
+.dashboard-container {
+  padding: 24px !important;
+  min-height: 100%;
+}
+
+.dashboard-container .container {
+  background: var(--adm-card) !important;
+  border-radius: var(--adm-radius) !important;
+  box-shadow: var(--adm-shadow) !important;
+  padding: 28px 32px 32px !important;
+  border: 1px solid rgba(45, 49, 66, 0.05);
+}
+
+.dashboard-container .container .tableBar {
+  margin-bottom: 24px !important;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.dashboard-container .container .tableBox {
+  border: none !important;
+  border-radius: var(--adm-radius-sm) !important;
+  overflow: hidden;
+}
+
+/* ========== Element 按钮 ========== */
+.el-button--primary {
+  background: linear-gradient(135deg, var(--adm-primary) 0%, #d4685a 100%) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  padding: 10px 20px !important;
+  box-shadow: 0 4px 14px rgba(224, 122, 95, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.2s ease !important;
+}
+
+.el-button--primary:hover,
+.el-button--primary:focus {
+  background: linear-gradient(135deg, var(--adm-primary-hover) 0%, #b85a4e 100%) !important;
+  box-shadow: 0 6px 20px rgba(224, 122, 95, 0.45) !important;
+  transform: translateY(-1px);
+}
+
+.el-button--primary.is-plain {
+  background: var(--adm-primary-soft) !important;
+  color: var(--adm-primary) !important;
+  border: 1px solid rgba(224, 122, 95, 0.35) !important;
+  box-shadow: none !important;
+}
+
+.el-button--primary.is-plain:hover {
+  background: var(--adm-primary) !important;
+  color: #fff !important;
+}
+
+/* 原黑色「主操作」按钮改为深岩色渐变 */
+.continue,
+.el-button.continue {
+  background: linear-gradient(135deg, #3d405b 0%, #2d3142 100%) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 16px rgba(45, 49, 66, 0.25) !important;
+}
+
+.continue:hover,
+.el-button.continue:hover {
+  background: linear-gradient(135deg, #4a4e6d 0%, #3d405b 100%) !important;
+  color: #fff !important;
+}
+
+/* 琥珀强调按钮：在 HTML 上增加 class="btn-accent-gold"（如「新增套餐分类」） */
+.el-button--primary.btn-accent-gold {
+  background: linear-gradient(135deg, var(--adm-gold) 0%, #d4a84b 100%) !important;
+  color: #2d3142 !important;
+  box-shadow: 0 4px 14px rgba(232, 186, 107, 0.45) !important;
+}
+
+.el-button--primary.btn-accent-gold:hover,
+.el-button--primary.btn-accent-gold:focus {
+  background: linear-gradient(135deg, #f0ca7a 0%, var(--adm-gold) 100%) !important;
+  color: #1a1d26 !important;
+}
+
+/* ========== 表格 ========== */
+.el-table {
+  font-family: var(--adm-font) !important;
+  border-radius: var(--adm-radius-sm) !important;
+}
+
+.el-table th {
+  background: #faf8f6 !important;
+  color: var(--adm-ink) !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+}
+
+.el-table td {
+  font-size: 14px !important;
+  color: var(--adm-ink) !important;
+}
+
+.el-table--striped .el-table__body tr.el-table__row--striped td {
+  background: rgba(245, 242, 238, 0.65) !important;
+}
+
+.el-table__body tr:hover > td {
+  background: var(--adm-primary-soft) !important;
+}
+
+/* ========== 文字按钮：修改 / 删除 ========== */
+.blueBug {
+  color: var(--adm-primary) !important;
+  font-weight: 600 !important;
+  padding: 4px 8px !important;
+  border-radius: 6px !important;
+  transition: background 0.2s !important;
+}
+
+.blueBug:hover {
+  background: var(--adm-primary-soft) !important;
+}
+
+.blueBug::after {
+  border-right-color: rgba(45, 49, 66, 0.08) !important;
+}
+
+.delBut {
+  color: #dc6060 !important;
+  font-weight: 600 !important;
+  padding: 4px 8px !important;
+  border-radius: 6px !important;
+}
+
+.delBut:hover {
+  background: rgba(220, 96, 96, 0.1) !important;
+}
+
+.delBut::after {
+  display: none !important;
+}
+
+/* ========== 分页 ========== */
+.el-pagination {
+  font-family: var(--adm-font) !important;
+  margin-top: 28px !important;
+}
+
+.el-pagination.is-background .el-pager li:not(.disabled).active {
+  background: linear-gradient(135deg, var(--adm-primary), #d4685a) !important;
+  border-radius: 8px !important;
+}
+
+.el-pagination.is-background .el-pager li:not(.disabled):hover {
+  color: var(--adm-primary) !important;
+}
+
+/* ========== 弹窗 ========== */
+.el-dialog {
+  border-radius: var(--adm-radius) !important;
+  overflow: hidden;
+  box-shadow: var(--adm-shadow-hover) !important;
+}
+
+.el-dialog__header {
+  padding: 20px 24px 16px !important;
+  border-bottom: 1px solid rgba(45, 49, 66, 0.06);
+}
+
+.el-dialog__title {
+  font-weight: 700 !important;
+  font-size: 17px !important;
+  color: var(--adm-ink) !important;
+}
+
+.el-dialog__body {
+  padding: 20px 24px !important;
+}
+
+/* ========== 表单页 addBrand-container ========== */
+.addBrand-container .container {
+  background: var(--adm-card) !important;
+  border-radius: var(--adm-radius) !important;
+  box-shadow: var(--adm-shadow) !important;
+  border: 1px solid rgba(45, 49, 66, 0.05);
+}
+
+.addBrand-container .container .subBox {
+  border-top-color: rgba(45, 49, 66, 0.06) !important;
+}
+
+.flavorBox .addBut {
+  background: linear-gradient(135deg, var(--adm-gold) 0%, #d4a84b 100%) !important;
+  color: #2d3142 !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 12px rgba(232, 186, 107, 0.35);
+}
+
+.flavorBox .addBut:hover {
+  filter: brightness(1.05);
+}
+
+.el-input__inner,
+.el-textarea__inner {
+  border-radius: 10px !important;
+  border-color: rgba(45, 49, 66, 0.12) !important;
+}
+
+.el-input__inner:focus,
+.el-textarea__inner:focus {
+  border-color: var(--adm-primary) !important;
+}
+
+.el-form-item__label {
+  color: var(--adm-muted) !important;
+  font-weight: 500 !important;
+}
+
+/* ========== 加载 ========== */
+.el-loading-mask {
+  background-color: rgba(245, 242, 238, 0.75) !important;
+}
+
+.el-loading-spinner .path {
+  stroke: var(--adm-primary) !important;
+}
+
+/* ========== 无障碍：减少动效 ========== */
+@media (prefers-reduced-motion: reduce) {
+  .el-button--primary,
+  .el-menu .el-menu-item,
+  .navbar .right-menu .outLogin {
+    transition: none !important;
+  }
+  .el-button--primary:hover,
+  .el-button--primary:focus {
+    transform: none !important;
+  }
+}

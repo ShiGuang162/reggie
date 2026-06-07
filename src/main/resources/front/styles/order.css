@@ -1,153 +1,201 @@
+/* 订单页面现代化样式 - 柔和暖色调 */
 #order {
   height: 100%;
+  background: var(--color-background);
 }
 
 #order .divHead {
   width: 100%;
-  height: 88rem;
-  opacity: 1;
-  background: #333333;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #D4685A 100%);
+  padding: 16px 20px;
   position: relative;
+  box-shadow: 0 2px 12px rgba(224, 122, 95, 0.3);
 }
 
 #order .divHead .divTitle {
-  font-size: 18rem;
-  font-family: PingFangSC, PingFangSC-Regular;
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: 600;
   text-align: center;
   color: #ffffff;
-  line-height: 25rem;
-  letter-spacing: 0;
-  position: absolute;
-  bottom: 13rem;
-  width: 100%;
+  letter-spacing: 1px;
 }
 
 #order .divHead .divTitle i {
   position: absolute;
-  left: 16rem;
+  left: 16px;
   top: 50%;
-  transform: translate(0, -50%);
+  transform: translateY(-50%);
+  font-size: 20px;
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+#order .divHead .divTitle i:hover {
+  transform: translateY(-50%) scale(1.1);
 }
 
 #order .divBody {
-  margin: 10rem 12rem 10rem 12rem;
-  background: #ffffff;
-  border-radius: 6rem;
-  padding-left: 10rem;
-  padding-right: 10rem;
-  height: calc(100% - 108rem);
+  margin: 16px;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 0 16px;
+  height: calc(100% - 88px);
   overflow-y: auto;
 }
 
-#order .divBody .van-list .van-cell::after {
-  border: 0;
+#order .divBody .van-list {
+  padding-bottom: 20px;
 }
 
-#order .divBody .item .timeStatus {
-  height: 46rem;
-  line-height: 16rem;
-  font-size: 14rem;
-  font-family: PingFangSC, PingFangSC-Regular;
-  font-weight: 400;
-  text-align: left;
-  color: #666666;
-  line-height: 20rem;
-  letter-spacing: 0;
+#order .divBody .van-list .van-cell {
+  padding: 16px 0;
+}
+
+#order .divBody .van-list .van-cell:not(:last-child)::after {
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* 订单卡片 */
+#order .order-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-soft);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+#order .order-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+#order .order-card .timeStatus {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2rem dashed #efefef;
-  border-top: 1px solid #efefef;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--color-border);
+  font-size: 13px;
 }
 
-#order .divBody .item .timeStatus span:first-child {
-  color: #333333;
+#order .order-card .timeStatus .order-time {
+  color: var(--color-text-primary);
+  font-weight: 500;
 }
 
-#order .divBody .item .dishList {
-  padding-top: 10rem;
-  padding-bottom: 11rem;
+#order .order-card .timeStatus .order-status {
+  color: var(--color-primary);
+  font-weight: 600;
 }
 
-#order .divBody .item .dishList .item {
-  padding-top: 5rem;
-  padding-bottom: 5rem;
+#order .order-card .dishList {
+  padding: 12px 0;
+}
+
+#order .order-card .dishList .dish-item {
   display: flex;
   justify-content: space-between;
-  height: 20rem;
-  opacity: 1;
-  font-size: 14rem;
-  font-family: PingFangSC, PingFangSC-Regular;
-  font-weight: 400;
-  text-align: left;
-  color: #666666;
-  line-height: 20rem;
-  letter-spacing: 0;
+  padding: 6px 0;
+  font-size: 14px;
+  color: var(--color-text-secondary);
 }
 
-#order .divBody .item .result {
+#order .order-card .dishList .dish-item .dish-name {
+  color: var(--color-text-primary);
+}
+
+#order .order-card .result {
   display: flex;
   justify-content: flex-end;
-  height: 20rem;
-  opacity: 1;
-  font-size: 14rem;
-  font-family: PingFangSC, PingFangSC-Regular;
-  font-weight: 400;
-  text-align: left;
-  color: #666666;
-  line-height: 20rem;
+  align-items: center;
+  padding-top: 12px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
 }
 
-#order .divBody .item .result .price {
-  color: #343434;
+#order .order-card .result .price {
+  color: var(--color-primary);
+  font-size: 18px;
+  font-weight: 700;
+  margin-left: 6px;
 }
 
-#order .divBody .item .btn {
+#order .order-card .btn {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 17rem;
-  margin-top: 20rem;
+  margin-top: 16px;
 }
 
-#order .divBody .btn .btnAgain {
-  width: 124rem;
-  height: 36rem;
-  opacity: 1;
-  border: 1px solid #e5e4e4;
-  border-radius: 19rem;
-  opacity: 1;
-  font-size: 14rem;
-  font-family: PingFangSC, PingFangSC-Regular;
+#order .order-card .btn .btnAgain {
+  padding: 10px 24px;
+  border: 1px solid var(--color-primary);
+  border-radius: 20px;
+  font-size: 14px;
   font-weight: 500;
-  text-align: center;
-  color: #333333;
-  line-height: 36rem;
-  letter-spacing: 0;
-  position: relative;
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+#order .order-card .btn .btnAgain:hover {
+  background: var(--color-primary);
+  color: white;
+  transform: scale(1.02);
 }
 
 #order .divNoData {
   width: 100%;
-  height: calc(100% - 88rem);
+  height: calc(100% - 60px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
+#order .divNoData .divContainer {
+  text-align: center;
+}
+
 #order .divNoData .divContainer img {
-  width: 240rem;
-  height: 129rem;
+  width: 120px;
+  height: 120px;
+  opacity: 0.5;
+  margin-bottom: 16px;
 }
 
 #order .divNoData .divContainer div {
-  font-size: 24rem;
-  font-family: PingFangSC, PingFangSC-Medium;
+  font-size: 16px;
   font-weight: 500;
-  text-align: center;
-  color: #333333;
-  line-height: 33rem;
-  height: 33rem;
-  margin-top: 20rem;
+  color: var(--color-text-secondary);
+}
+
+/* 状态标签样式 */
+#order .status-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+#order .status-tag.pending {
+  background: rgba(242, 204, 143, 0.2);
+  color: #C5A028;
+}
+
+#order .status-tag.delivering {
+  background: rgba(129, 178, 154, 0.2);
+  color: #5A9A7A;
+}
+
+#order .status-tag.completed {
+  background: rgba(129, 178, 154, 0.2);
+  color: var(--color-accent);
+}
+
+#order .status-tag.cancelled {
+  background: rgba(107, 114, 128, 0.1);
+  color: var(--color-text-secondary);
 }

@@ -40,7 +40,7 @@ public class CategoryController {
      */
     @GetMapping("/page")
     public R<Page> page(int page, int pageSize){
-        log.info("page = {},pageSize = {}",page,pageSize);
+        log.debug("page = {}, pageSize = {}", page, pageSize);
         //构造分页构造器
         Page<Category> pageInfo = new Page<>(page,pageSize);
         //构造条件构造器

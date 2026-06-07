@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: reggie-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Mysql@123456
+      MYSQL_DATABASE: reggie
+      TZ: Asia/Shanghai
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init-db:/docker-entrypoint-initdb.d
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    networks:
+      - reggie-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pMysql@123456"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: reggie-redis
+    restart: always
+    command: redis-server --requirepass 1234
+    volumes:
+      - redis_data:/data
+    networks:
+      - reggie-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "1234", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: reggie-app
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/reggie?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Mysql@123456
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+      - SPRING_REDIS_PASSWORD=1234
+      - REGGIE_PATH=/app/images
+      - ALIYUN_SMS_ACCESS_KEY_ID=dummy
+      - ALIYUN_SMS_ACCESS_KEY_SECRET=dummy
+    volumes:
+      - app_images:/app/images
+    networks:
+      - reggie-network
+
+volumes:
+  mysql_data:
+  redis_data:
+  app_images:
+
+networks:
+  reggie-network:
+    driver: bridge

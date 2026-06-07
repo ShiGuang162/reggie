@@ -55,10 +55,8 @@ public class ShoppingCartController {
         ShoppingCart cartServiceOne = shoppingCartService.getOne(queryWrapper);
 
         if(cartServiceOne != null){
-            //如果已经存在，就在原来数量基础上加一
-            Integer number = cartServiceOne.getNumber();
-            cartServiceOne.setNumber(number + 1);
-            shoppingCartService.updateById(cartServiceOne);
+            //如果已经存在，使用原子递增解决并发问题
+            shoppingCartService.incrementNumber(cartServiceOne.getId());
         }else{
             //如果不存在，则添加到购物车，数量默认就是一
             shoppingCart.setNumber(1);
@@ -68,6 +66,38 @@ public class ShoppingCartController {
         }
 
         return R.success(cartServiceOne);
+    }
+
+    /**
+     * 购物车中商品数量减一（与前端 POST /shoppingCart/sub 对应）
+     */
+    @PostMapping("/sub")
+    public R<ShoppingCart> sub(@RequestBody ShoppingCart shoppingCart) {
+        Long userId = BaseContext.getCurrentId();
+        LambdaQueryWrapper<ShoppingCart> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ShoppingCart::getUserId, userId);
+
+        if (shoppingCart.getDishId() != null) {
+            queryWrapper.eq(ShoppingCart::getDishId, shoppingCart.getDishId());
+        }
+        if (shoppingCart.getSetmealId() != null) {
+            queryWrapper.eq(ShoppingCart::getSetmealId, shoppingCart.getSetmealId());
+        }
+
+        ShoppingCart cart = shoppingCartService.getOne(queryWrapper);
+        if (cart == null) {
+            return R.error("购物车中无此商品");
+        }
+
+        int rows = shoppingCartService.decrementNumber(cart.getId());
+        if (rows > 0) {
+            cart.setNumber(cart.getNumber() - 1);
+            return R.success(cart);
+        }
+
+        shoppingCartService.removeById(cart.getId());
+        cart.setNumber(0);
+        return R.success(cart);
     }
 
     /**
